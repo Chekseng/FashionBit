@@ -145,8 +145,12 @@
   padding: 10px 20px;
   border: none;
   background-color: var(--secondary-text-color);
-  color: var(--primary-text-color);
+  color: var(--quinary-text-color);
   cursor: pointer;
+}
+
+.home-abt .home-abt-info article:last-child button a {
+  color: var(--quinary-text-color);
 }
 
 .home-abt .home-abt-info article:last-child button :hover {

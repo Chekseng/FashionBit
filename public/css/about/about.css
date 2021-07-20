@@ -91,8 +91,11 @@
 .about-body .about-description .about-description-image {
   background-image: url("https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
   background-size: cover;
-  padding: 200px;
+  padding: 200px 0;
   background-position: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
 
 .about-body .about-description .about-description-text {

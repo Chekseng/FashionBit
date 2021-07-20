@@ -78,6 +78,7 @@
 
         h3 + div {
           display: flex;
+          flex-flow: wrap;
           justify-content: flex-start;
 
           p {
@@ -94,6 +95,12 @@
         }
 
         .blog-buttons {
+          @media screen and (max-width: 500px) {
+            display: grid;
+            grid-template-columns: 80%;
+            grid-gap: 10px 0;
+            text-align: center;
+          }
           .blog-edit-button,
           .blog-delete-button {
             padding: 10px 20px;

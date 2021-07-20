@@ -87,6 +87,8 @@
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  -ms-flex-flow: wrap;
+      flex-flow: wrap;
   -webkit-box-pack: start;
       -ms-flex-pack: start;
           justify-content: flex-start;
@@ -102,6 +104,17 @@
 .archive-container .archive-blog-list .archive-blog-item-inner .archive-blog-item-text p {
   color: var(--tetiary-text-color);
   padding: 0 20px 30px 0;
+}
+
+@media screen and (max-width: 500px) {
+  .archive-container .archive-blog-list .archive-blog-item-inner .archive-blog-item-text .blog-buttons {
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: 80%;
+        grid-template-columns: 80%;
+    grid-gap: 10px 0;
+    text-align: center;
+  }
 }
 
 .archive-container .archive-blog-list .archive-blog-item-inner .archive-blog-item-text .blog-buttons .blog-edit-button,
