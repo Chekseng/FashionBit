@@ -14,7 +14,7 @@ const app = express()
 mongoose.connect(MongoDB_URI, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false })
 const db = mongoose.connection
 db.on('error', (err) => console.error(err))
-db.once('open', () => console.log('the mongodb database is connected!'))
+db.once('open', () => console.log('the mongodb database is connected!')) 
 
 // set the ejs view engine
 app.set('view engine', 'ejs')
