@@ -22,8 +22,8 @@ let upload = multer({
 }).single('image')
 
 // get route for home page
-router.get('/', (req,res) => {
-  Fashion.find().sort({ created: 'desc'}).exec((err, articles) => {
+router.get('/', async (req,res) => {
+  await Fashion.find().sort({ created: 'desc'}).exec((err, articles) => {
     if(err){
       console.error(err)
       res.json({ message: err.message })
@@ -63,7 +63,7 @@ router.get('/add-blog', (req,res) => {
 })
 
 // post route for add blogs
-router.post('/add-blog', upload, (req,res) => {
+router.post('/add-blog', upload, async (req,res) => {
   let fashion = new Fashion({
     title: req.body.title,
     author: req.body.author,
@@ -72,22 +72,27 @@ router.post('/add-blog', upload, (req,res) => {
     image: req.file.filename,
   })
 
-  fashion.save((err) => {
-    if(err) {
-      console.error(err)
-      res.json({ message: err.message })
-    } else {
-      req.session.message = {
-        postMessage: 'Blog Article Successfully Added'
+  try {
+    await fashion.save((err) => {
+      if(err) {
+        console.error(err)
+        res.json({ message: err.message })
+      } else {
+        req.session.message = {
+          postMessage: 'Blog Article Successfully Added'
+        }
+        res.redirect('/archive')
       }
-      res.redirect('/archive')
-    }
-  })
+    })
+    } catch (err) {
+      res.status(500).send(err)
+  }
+  
 })
 
 // get route for post archive
-router.get('/archive', (req,res) => {
-  Fashion.find().sort({ created: 'desc' }).exec((err, articles) => {
+router.get('/archive', async (req,res) => {
+  await Fashion.find().sort({ created: 'desc' }).exec((err, articles) => {
     if(err){
       console.error(err)
       res.json({ message: err.message })
@@ -102,10 +107,10 @@ router.get('/archive', (req,res) => {
 })
 
 // get route for single blog
-router.get('/:id', (req,res) => {
+router.get('/:id', async (req,res) => {
   let id = req.params.id;
-  Fashion.find().sort({ created: 'desc'}).exec((err, articles) => {
-    Fashion.findById(id, (err, results) => {
+  await Fashion.find().sort({ created: 'desc'}).exec( async (err, articles) => {
+    await Fashion.findById(id, (err, results) => {
     if(err){
       res.redirect('/')
     } else {
@@ -125,9 +130,9 @@ router.get('/:id', (req,res) => {
 })
 
 // get route for editing a single blog
-router.get('/edit/:id', (req,res) => {
+router.get('/edit/:id', async (req,res) => {
   let id = req.params.id;
-  Fashion.findById(id, (err, results) => {
+  await Fashion.findById(id, (err, results) => {
     if(err){
       console.error(err)
       res.json({ message: err.message})
@@ -146,7 +151,7 @@ router.get('/edit/:id', (req,res) => {
 })
 
 // put route to update already existing blog article
-router.post('/update/:id', upload, (req,res) => {
+router.post('/update/:id', upload, async (req,res) => {
   let id = req.params.id;
   let new_image = ''
   if(req.file){
@@ -160,7 +165,7 @@ router.post('/update/:id', upload, (req,res) => {
     new_image = req.body.old_image;
   }
 
-  Fashion.findByIdAndUpdate(id, {
+  await Fashion.findByIdAndUpdate(id, {
     title: req.body.title,
     author: req.body.author,
     category: req.body.category,
@@ -179,9 +184,9 @@ router.post('/update/:id', upload, (req,res) => {
 })
 
 // delete route for single blog post
-router.get('/delete/:id', (req,res) => {
+router.get('/delete/:id', async (req,res) => {
   let id = req.params.id;
-  Fashion.findByIdAndRemove(id, (err,result) => {
+  await Fashion.findByIdAndRemove(id, (err,result) => {
     if(result.image != ''){
       try{
         fs.unlinkSync('public/uploads/' + result.image)

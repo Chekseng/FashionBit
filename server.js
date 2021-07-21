@@ -12,6 +12,7 @@ const app = express()
 
 // connect to mongodb database with mongoose
 mongoose.connect(MongoDB_URI, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false })
+
 const db = mongoose.connection
 db.on('error', (err) => console.error(err))
 db.once('open', () => console.log('the mongodb database is connected!')) 
