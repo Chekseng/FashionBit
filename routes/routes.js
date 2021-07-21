@@ -23,19 +23,23 @@ let upload = multer({
 
 // get route for home page
 router.get('/', async (req,res) => {
-  await Fashion.find().sort({ created: 'desc'}).exec((err, articles) => {
+  try {
+    await Fashion.find().sort({ created: 'desc'}).exec((err, articles) => {
     if(err){
       console.error(err)
       res.json({ message: err.message })
-    } else {
-      res.render('pages/index', {
-        title: 'Home Page',
-        heroData: heroData,
-        footerData: footerData,
-        articles: articles,
-      })
-    }
-  })
+      } else {
+        res.render('pages/index', {
+          title: 'Home Page',
+          heroData: heroData,
+          footerData: footerData,
+          articles: articles,
+        })
+      }
+    })
+  } catch (err) {
+    console.log(err)
+  }
 })
 
 // get route for the about page
@@ -92,24 +96,31 @@ router.post('/add-blog', upload, async (req,res) => {
 
 // get route for post archive
 router.get('/archive', async (req,res) => {
-  await Fashion.find().sort({ created: 'desc' }).exec((err, articles) => {
+  try{
+    await Fashion.find().sort({ created: 'desc' }).exec((err, articles) => {
     if(err){
       console.error(err)
       res.json({ message: err.message })
-    } else {
-      res.render('pages/archive', {
-        title: 'Blog Archives',
-        articles: articles,
-        footerData: footerData,
-      })
-    }
-  })
+      } else {
+        res.render('pages/archive', {
+          title: 'Blog Archives',
+          articles: articles,
+          footerData: footerData,
+        })
+      }
+    })
+  } catch (err) {
+    console.log(err)
+  }
+  
 })
 
 // get route for single blog
 router.get('/:id', async (req,res) => {
   let id = req.params.id;
-  await Fashion.find().sort({ created: 'desc'}).exec( async (err, articles) => {
+
+  try {
+    await Fashion.find().sort({ created: 'desc'}).exec( async (err, articles) => {
     await Fashion.findById(id, (err, results) => {
     if(err){
       res.redirect('/')
@@ -127,6 +138,11 @@ router.get('/:id', async (req,res) => {
     }
   })
   })
+  } catch (err) {
+    console.log(err)
+  }
+
+  
 })
 
 // get route for editing a single blog
@@ -165,45 +181,59 @@ router.post('/update/:id', upload, async (req,res) => {
     new_image = req.body.old_image;
   }
 
-  await Fashion.findByIdAndUpdate(id, {
+  try{
+    await Fashion.findByIdAndUpdate(id, {
     title: req.body.title,
     author: req.body.author,
     category: req.body.category,
     description: req.body.description,
     image: new_image,
-  },  (err, result) => {
-    if(err){
-      res.json({ message: err.message})
-    } else {
-      req.session.message = {
-        updateMessage: 'Blog Article Has Been Successfully Updated'
+    },  (err, result) => {
+      if(err){
+        res.json({ message: err.message})
+      } else {
+        req.session.message = {
+          updateMessage: 'Blog Article Has Been Successfully Updated'
+        }
+        res.redirect('/archive')
       }
-      res.redirect('/archive')
-    }
-  })
+    })
+  } catch (err) {
+    console.log(err)
+  }
+
+  
 })
 
 // delete route for single blog post
 router.get('/delete/:id', async (req,res) => {
   let id = req.params.id;
-  await Fashion.findByIdAndRemove(id, (err,result) => {
-    if(result.image != ''){
-      try{
-        fs.unlinkSync('public/uploads/' + result.image)
-      } catch (err) {
-        console.error(err)
-      }
-    }
 
-    if(err) {
-      res.json({ message: err.message })
-    } else {
-      req.session.message = {
-        deleteMessage: 'Blog Article Has Been Successfully Deleted'
+  try {
+    await Fashion.findByIdAndRemove(id, (err,result) => {
+      if(result.image != ''){
+        try{
+          fs.unlinkSync('public/uploads/' + result.image)
+        } catch (err) {
+          console.error(err)
+        }
       }
-      res.redirect('/archive')
-    }
-  })
+
+      if(err) {
+        res.json({ message: err.message })
+      } else {
+        req.session.message = {
+          deleteMessage: 'Blog Article Has Been Successfully Deleted'
+        }
+        res.redirect('/archive')
+      }
+    })
+  } catch (err) {
+    console.log(err)
+  }
+
+
+  
 })
 
 module.exports = router;

@@ -11,11 +11,33 @@ const MongoDB_URI = process.env.DB_URL
 const app = express()
 
 // connect to mongodb database with mongoose
-mongoose.connect(MongoDB_URI, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false })
+// mongoose.connect(MongoDB_URI, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false })
 
-const db = mongoose.connection
-db.on('error', (err) => console.error(err))
-db.once('open', () => console.log('the mongodb database is connected!')) 
+// const db = mongoose.connection
+// db.on('error', (err) => console.error(err))
+// db.once('open', () => console.log('the mongodb database is connected!')) 
+
+async function start () {
+  try{
+    await mongoose.connect(MongoDB_URI, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+      keepAlive: true
+    })
+    .then(() => console.log('mongoose connection established'))
+    .catch((err) => console.log(err))
+
+    // set up a server listening port and success message
+    app.listen(process.env.PORT || 3000 , () => console.log('the express server is up and running !'))
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+start();
+
 
 // set the ejs view engine
 app.set('view engine', 'ejs')
@@ -40,6 +62,3 @@ app.use('', fashionRouter)
 
 // set the public folder to static
 app.use(express.static('public'))
-
-// set up a server listening port and success message
-app.listen(process.env.PORT || 3000 , () => console.log('the express server is up and running !'))
