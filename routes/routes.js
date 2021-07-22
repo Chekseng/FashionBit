@@ -25,7 +25,7 @@ let upload = multer({
 router.get('/', async (req,res) => {
   try {
     await Fashion.find().sort({ created: 'desc'}).exec( async (err, articles) => {
-      res.render('pages/index', {
+      await res.render('pages/index', {
         title: 'Home Page',
         heroData: heroData,
         footerData: footerData,
@@ -89,7 +89,7 @@ router.post('/add-blog', upload, async (req,res) => {
 router.get('/archive', async (req,res) => {
   try{
     await Fashion.find().sort({ created: 'desc' }).exec(async (err, articles) => {
-      res.render('pages/archive', {
+      await res.render('pages/archive', {
         title: 'Blog Archives',
         articles: articles,
         footerData: footerData,
