@@ -88,8 +88,8 @@ router.post('/add-blog', upload, async (req,res) => {
 // get route for post archive
 router.get('/archive', async (req,res) => {
   try{
-    await Fashion.find().sort({ created: 'desc' }).exec(async (err, articles) => {
-      await res.render('pages/archive', {
+    await Fashion.find().sort({ created: 'desc' }).exec( (err, articles) => {
+        res.render('pages/archive', {
         title: 'Blog Archives',
         articles: articles,
         footerData: footerData,
@@ -106,8 +106,8 @@ router.get('/:id', async (req,res) => {
   let id = req.params.id;
 
   try {
-    await Fashion.find().sort({ created: 'desc'}).exec( async (err, articles) => {
-      await Fashion.findById(id, (err, results) => {
+    await Fashion.find().sort({ created: 'desc'}).exec( (err, articles) => {
+      Fashion.findById(id, (err, results) => {
         if(err){
           res.redirect('/')
         } else {
