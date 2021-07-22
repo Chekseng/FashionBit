@@ -24,21 +24,17 @@ let upload = multer({
 // get route for home page
 router.get('/', async (req,res) => {
   try {
-    await Fashion.find().sort({ created: 'desc'}).exec((err, articles) => {
-    if(err){
-      console.error(err)
-      res.json({ message: err.message })
-      } else {
-        res.render('pages/index', {
-          title: 'Home Page',
-          heroData: heroData,
-          footerData: footerData,
-          articles: articles,
-        })
-      }
+    await Fashion.find().sort({ created: 'desc'}).exec( async (err, articles) => {
+      res.render('pages/index', {
+        title: 'Home Page',
+        heroData: heroData,
+        footerData: footerData,
+        articles: articles,
+      })
     })
   } catch (err) {
     console.log(err)
+    res.json({ message: err.message })
   }
 })
 
@@ -78,41 +74,31 @@ router.post('/add-blog', upload, async (req,res) => {
 
   try {
     await fashion.save((err) => {
-      if(err) {
-        console.error(err)
-        res.json({ message: err.message })
-      } else {
-        req.session.message = {
-          postMessage: 'Blog Article Successfully Added'
-        }
-        res.redirect('/archive')
+      req.session.message = {
+        postMessage: 'Blog Article Successfully Added'
       }
+      res.redirect('/archive')
     })
     } catch (err) {
       res.status(500).send(err)
-  }
-  
+      res.json({ message: err.message })
+  }  
 })
 
 // get route for post archive
 router.get('/archive', async (req,res) => {
   try{
-    await Fashion.find().sort({ created: 'desc' }).exec((err, articles) => {
-    if(err){
-      console.error(err)
-      res.json({ message: err.message })
-      } else {
-        res.render('pages/archive', {
-          title: 'Blog Archives',
-          articles: articles,
-          footerData: footerData,
-        })
-      }
+    await Fashion.find().sort({ created: 'desc' }).exec(async (err, articles) => {
+      res.render('pages/archive', {
+        title: 'Blog Archives',
+        articles: articles,
+        footerData: footerData,
+      })
     })
   } catch (err) {
     console.log(err)
+    res.json({ message: err.message })
   }
-  
 })
 
 // get route for single blog
@@ -121,25 +107,26 @@ router.get('/:id', async (req,res) => {
 
   try {
     await Fashion.find().sort({ created: 'desc'}).exec( async (err, articles) => {
-    await Fashion.findById(id, (err, results) => {
-    if(err){
-      res.redirect('/')
-    } else {
-      if(results == null){
-        res.redirect('/')
-      } else {
-        res.render('pages/blog-detail', {
-          title: `${results.title.slice(0,10)}... | Detail Page`,
-          results: results,
-          articles: articles,
-          footerData: footerData,
-        })
+      await Fashion.findById(id, (err, results) => {
+        if(err){
+          res.redirect('/')
+        } else {
+        if(results == null){
+          res.redirect('/')
+        } else {
+          res.render('pages/blog-detail', {
+            title: `${results.title.slice(0,10)}... | Detail Page`,
+            results: results,
+            articles: articles,
+            footerData: footerData,
+          })
+        }
       }
-    }
-  })
+    })
   })
   } catch (err) {
     console.log(err)
+    res.redirect('/')
   }
 
   
@@ -148,11 +135,9 @@ router.get('/:id', async (req,res) => {
 // get route for editing a single blog
 router.get('/edit/:id', async (req,res) => {
   let id = req.params.id;
-  await Fashion.findById(id, (err, results) => {
-    if(err){
-      console.error(err)
-      res.json({ message: err.message})
-    } else {
+
+  try{
+    await Fashion.findById(id, async (err, results) => {
       if(results == null){
         res.redirect('/')
       } else {
@@ -162,8 +147,12 @@ router.get('/edit/:id', async (req,res) => {
           footerData: footerData,
         })
       }
-    }
-  })
+    })
+  } catch (err) {
+    console.log(err)
+    res.json({ message: err.message })
+  }
+
 })
 
 // put route to update already existing blog article
@@ -201,8 +190,7 @@ router.post('/update/:id', upload, async (req,res) => {
   } catch (err) {
     console.log(err)
   }
-
-  
+ 
 })
 
 // delete route for single blog post
@@ -230,9 +218,8 @@ router.get('/delete/:id', async (req,res) => {
     })
   } catch (err) {
     console.log(err)
+    res.json({ message: err.message })
   }
-
-
   
 })
 
